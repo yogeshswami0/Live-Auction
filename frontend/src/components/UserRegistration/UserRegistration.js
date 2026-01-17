@@ -22,14 +22,14 @@ const UserRegistration = () => {
         e.preventDefault();
         try {
             // 1. Register the User
-            const userRes = await axios.post('http://localhost:5000/api/register', {
+            const userRes = await axios.post('BACKEND_URL/api/register', {
                 name: formData.name,
                 email: formData.email,
                 password: formData.password,
                 role: formData.role
             });
             // 2. Auto-login the user to obtain token for subsequent actions
-            const loginRes = await axios.post('http://localhost:5000/api/login', {
+            const loginRes = await axios.post('BACKEND_URL/api/login', {
                 email: formData.email,
                 password: formData.password
             });
@@ -43,7 +43,7 @@ const UserRegistration = () => {
             if (formData.role === 'Owner' && formData.teamName) {
                 try {
                     const token = loginRes.data.token;
-                    const teamRes = await axios.post('http://localhost:5000/api/teams/register', { teamName: formData.teamName }, { headers: { Authorization: `Bearer ${token}` } });
+                    const teamRes = await axios.post('BACKEND_URL/api/teams/register', { teamName: formData.teamName }, { headers: { Authorization: `Bearer ${token}` } });
                     localStorage.setItem('team', JSON.stringify(teamRes.data));
                 } catch (teamErr) {
                     console.warn('Team creation failed after signup:', teamErr.response?.data || teamErr.message);

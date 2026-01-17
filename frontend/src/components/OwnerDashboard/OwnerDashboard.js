@@ -20,12 +20,12 @@ const OwnerDashboard = () => {
     const fetchTeamData = async () => {
         try {
             if (!ownerId) return setLoading(false);
-            const res = await axios.get(`http://localhost:5000/api/teams/owner/${ownerId}`, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get(`BACKEND_URL/api/teams/owner/${ownerId}`, { headers: { Authorization: `Bearer ${token}` } });
             setTeam(res.data);
             if (res.data && res.data.event) {
-                const matchesRes = await axios.get(`http://localhost:5000/api/events/${res.data.event}/matches`, { headers: { Authorization: `Bearer ${token}` } });
+                const matchesRes = await axios.get(`BACKEND_URL/api/events/${res.data.event}/matches`, { headers: { Authorization: `Bearer ${token}` } });
                 setMatches(matchesRes.data);
-                const playersRes = await axios.get(`http://localhost:5000/api/players?eventId=${res.data.event}`);
+                const playersRes = await axios.get(`BACKEND_URL/api/players?eventId=${res.data.event}`);
                 setScoutingPlayers(playersRes.data);
             }
             setLoading(false);
@@ -44,7 +44,7 @@ const OwnerDashboard = () => {
         try {
             const payload = { teamName: newTeamName };
             if (newTeamLogo) payload.logo = newTeamLogo;
-            const res = await axios.post('http://localhost:5000/api/teams/register', payload, { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.post('BACKEND_URL/api/teams/register', payload, { headers: { Authorization: `Bearer ${token}` } });
             setTeam(res.data);
             setCreating(false);
             localStorage.setItem('team', JSON.stringify(res.data));

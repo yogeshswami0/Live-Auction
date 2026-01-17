@@ -25,7 +25,7 @@ const PlayerRegistration = () => {
         const loadProfile = async () => {
             try {
                 if (!token || !user || user.role !== 'Player') return;
-                const res = await axios.get('http://localhost:5000/api/players/me', {
+                const res = await axios.get('BACKEND_URL/api/players/me', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const p = res.data;
@@ -75,13 +75,13 @@ const PlayerRegistration = () => {
             };
 
             if (hasExistingProfile) {
-                const res = await axios.put('http://localhost:5000/api/players/me', playerPayload, {
+                const res = await axios.put('BACKEND_URL/api/players/me', playerPayload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setStatus(res.data.status || '');
                 alert("Profile updated successfully.");
             } else {
-                await axios.post('http://localhost:5000/api/players/register', playerPayload, {
+                await axios.post('BACKEND_URL/api/players/register', playerPayload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 alert("Profile submitted. Awaiting admin approval to enter auction pool.");

@@ -9,7 +9,7 @@ const Leaderboard = () => {
     useEffect(() => {
         const fetchLeaderboard = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/teams');
+                const res = await axios.get('BACKEND_URL/api/teams');
                 // Sort teams by remaining budget or player count
                 const sortedTeams = res.data.sort((a, b) => b.players.length - a.players.length);
                 setTeams(sortedTeams);

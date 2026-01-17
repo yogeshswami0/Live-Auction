@@ -4,7 +4,7 @@ import io from 'socket.io-client';
 import './AdminPanel.css';
 
 const token = localStorage.getItem('token');
-const socket = io('http://localhost:5000', { auth: { token } });
+const socket = io('BACKEND_URL', { auth: { token } });
 
 const AdminPanel = () => {
 
@@ -25,7 +25,7 @@ const AdminPanel = () => {
 
     const fetchPlayers = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/admin/players', {
+            const res = await axios.get('BACKEND_URL/api/admin/players', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPlayers(res.data);
@@ -37,7 +37,7 @@ const AdminPanel = () => {
 
     const fetchEvents = async () => {
         try {
-            const res = await axios.get('http://localhost:5000/api/events', {
+            const res = await axios.get('BACKEND_URL/api/events', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvents(res.data);
@@ -54,7 +54,7 @@ const AdminPanel = () => {
         try {
             setMatchesLoading(true);
             setSelectedEventId(eventId);
-            const res = await axios.get(`http://localhost:5000/api/events/${eventId}/matches`, {
+            const res = await axios.get(`BACKEND_URL/api/events/${eventId}/matches`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setMatches(res.data);
@@ -77,7 +77,7 @@ const AdminPanel = () => {
             if (newEventStart) {
                 payload.startTime = newEventStart;
             }
-            const res = await axios.post('http://localhost:5000/api/events', payload, {
+            const res = await axios.post('BACKEND_URL/api/events', payload, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvents([res.data, ...events]);
@@ -91,7 +91,7 @@ const AdminPanel = () => {
 
     const activateEvent = async (eventId) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/events/${eventId}/activate`, {}, {
+            const res = await axios.post(`BACKEND_URL/api/events/${eventId}/activate`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvents(events.map(e => e._id === res.data._id ? res.data : { ...e, isActive: false }));
@@ -103,7 +103,7 @@ const AdminPanel = () => {
     const deleteEvent = async (eventId) => {
         try {
             if (!window.confirm('Are you sure you want to delete this event?')) return;
-            await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
+            await axios.delete(`BACKEND_URL/api/events/${eventId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvents(events.filter(e => e._id !== eventId));
@@ -121,7 +121,7 @@ const AdminPanel = () => {
 
     const approvePlayer = async (playerId) => {
         try {
-            const res = await axios.post(`http://localhost:5000/api/admin/players/${playerId}/approve`, {}, {
+            const res = await axios.post(`BACKEND_URL/api/admin/players/${playerId}/approve`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPlayers(players.map(p => p._id === playerId ? res.data : p));
@@ -141,7 +141,7 @@ const AdminPanel = () => {
             if (newPrice.trim() !== '') {
                 payload.basePrice = Number(newPrice);
             }
-            const res = await axios.post(`http://localhost:5000/api/admin/players/${playerId}/reauction`, payload, {
+            const res = await axios.post(`BACKEND_URL/api/admin/players/${playerId}/reauction`, payload, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setPlayers(players.map(p => p._id === playerId ? res.data : p));
@@ -288,7 +288,7 @@ const AdminPanel = () => {
                                     onClick={async () => {
                                         try {
                                             if (!window.confirm('Delete this player profile?')) return;
-                                            await axios.delete(`http://localhost:5000/api/admin/players/${player._id}`, {
+                                            await axios.delete(`${BACKEND_URL}/api/admin/players/${player._id}`, {
                                                 headers: { Authorization: `Bearer ${token}` }
                                             });
                                             setPlayers(players.filter(p => p._id !== player._id));

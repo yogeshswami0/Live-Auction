@@ -289,7 +289,14 @@ app.get('/api/teams/owner/:ownerId', async (req, res) => {
 });
 
 // --- SOCKET ENGINE ---
-const io = new Server(server, { cors: { origin: "*" } });
+//const io = new Server(server, { cors: { origin: "*" } });
+
+const io = new Server(server, {
+    cors: {
+        origin: process.env.FRONTEND_URL || "http://localhost:3000",
+        methods: ["GET", "POST"]
+    }
+});
 
 // Socket authentication: expect `auth: { token }` from client when connecting
 io.use(async (socket, next) => {
@@ -439,4 +446,6 @@ io.on('connection', (socket) => {
     });
 });
 
-server.listen(5000, () => console.log("🚀 Server running on port 5000"));
+//server.listen(5000, () => console.log("🚀 Server running on port 5000"));
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
