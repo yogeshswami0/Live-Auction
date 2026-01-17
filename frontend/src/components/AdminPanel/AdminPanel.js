@@ -14,11 +14,14 @@ const AdminPanel = () => {
     const [newEventBudget, setNewEventBudget] = useState('');
     const [newEventStart, setNewEventStart] = useState('');
     const [loading, setLoading] = useState(true);
+    const [matches, setMatches] = useState([]);
+    const [selectedEventId, setSelectedEventId] = useState(null);
+    const [matchesLoading, setMatchesLoading] = useState(false);
 
     useEffect(() => {
         fetchPlayers();
         fetchEvents();
-    }, []);
+    });
 
     const fetchPlayers = async () => {
         try {
@@ -38,8 +41,27 @@ const AdminPanel = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEvents(res.data);
+            const active = res.data.find(e => e.isActive);
+            if (active) {
+                fetchMatches(active._id);
+            }
         } catch (err) {
             console.error("Error fetching events", err);
+        }
+    };
+
+    const fetchMatches = async (eventId) => {
+        try {
+            setMatchesLoading(true);
+            setSelectedEventId(eventId);
+            const res = await axios.get(`http://localhost:5000/api/events/${eventId}/matches`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            setMatches(res.data);
+        } catch (err) {
+            console.error("Error fetching matches", err);
+        } finally {
+            setMatchesLoading(false);
         }
     };
 
@@ -167,6 +189,9 @@ const AdminPanel = () => {
                                 ) : (
                                     <button onClick={() => activateEvent(event._id)}>Set Active</button>
                                 )}
+                                <button onClick={() => fetchMatches(event._id)}>
+                                    View Schedule
+                                </button>
                                 <button className="event-delete-btn" onClick={() => deleteEvent(event._id)}>
                                     Delete
                                 </button>
@@ -174,6 +199,39 @@ const AdminPanel = () => {
                         </li>
                     ))}
                 </ul>
+            </div>
+            
+            <div className="round2-section">
+                <h3>Match Schedule</h3>
+                {matchesLoading && <div>Loading schedule...</div>}
+                {!matchesLoading && !selectedEventId && (
+                    <p>Select an event to view its schedule.</p>
+                )}
+                {!matchesLoading && selectedEventId && matches.length === 0 && (
+                    <p>No matches scheduled yet for this event.</p>
+                )}
+                {!matchesLoading && matches.length > 0 && (
+                    <table className="player-list-table">
+                        <thead>
+                            <tr>
+                                <th>Home Team</th>
+                                <th>Away Team</th>
+                                <th>Start Time</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {matches.map(match => (
+                                <tr key={match._id}>
+                                    <td>{match.homeTeam?.teamName || 'TBD'}</td>
+                                    <td>{match.awayTeam?.teamName || 'TBD'}</td>
+                                    <td>{new Date(match.startTime).toLocaleString()}</td>
+                                    <td>{match.type}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                )}
             </div>
             
             <table className="player-list-table">
